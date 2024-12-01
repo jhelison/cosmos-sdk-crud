@@ -2,6 +2,11 @@ package types
 
 import "errors"
 
+// Error messages
+const (
+	ErrIdDuplicated = "id duplicated"
+)
+
 // NewGenesisState creates a new genesis state with default values.
 func NewGenesisState() *GenesisState {
 	return &GenesisState{
@@ -13,15 +18,18 @@ func NewGenesisState() *GenesisState {
 func (gs *GenesisState) Validate() error {
 	// Validate the genesis students
 	unique := make(map[string]bool)
-	for _, game := range gs.Students {
-		// Validate if the game number already exists
-		_, ok := unique[game.Id]
+	for _, student := range gs.Students {
+		// Validate if the student ID
+		_, ok := unique[student.Id]
 		if ok {
-			return errors.New("Id duplicated")
+			return errors.New(ErrIdDuplicated)
 		}
 
-		// Validate each game
-		err := game.Validate()
+		// Set on the hashMap
+		unique[student.Id] = true
+
+		// Validate the student
+		err := student.Validate()
 		if err != nil {
 			return err
 		}
