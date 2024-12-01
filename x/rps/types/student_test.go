@@ -64,6 +64,13 @@ func TestStudentValidate(t *testing.T) {
 				require.ErrorContains(t, err, tc.errContains)
 			} else {
 				require.NoError(t, err)
+
+				// Test the getters
+				require.Equal(t, tc.studentName, student.GetName())
+				require.Equal(t, tc.studentAge, student.GetStudentAge())
+				address, err := student.GetStudentAddress()
+				require.NoError(t, err)
+				require.Equal(t, studentId, address)
 			}
 		})
 	}
