@@ -60,11 +60,13 @@ func (ms msgServer) CreateStudent(c context.Context, msg *types.MsgCreateStudent
 	}
 
 	// Emit the event
-	ctx.EventManager().EmitTypedEvent(&types.EventNewStudent{
+	if err := ctx.EventManager().EmitTypedEvent(&types.EventNewStudent{
 		Name: msg.Name,
 		Id:   msg.Id,
 		Age:  msg.Age,
-	})
+	}); err != nil {
+		return nil, err
+	}
 
 	// Return the response
 	return &types.MsgCreateStudentResponse{}, nil
@@ -94,7 +96,9 @@ func (ms msgServer) DeleteStudent(c context.Context, msg *types.MsgDeleteStudent
 	}
 
 	// Emit the event
-	ctx.EventManager().EmitTypedEvent(&types.EventDeleteStudent{Id: msg.Id})
+	if err := ctx.EventManager().EmitTypedEvent(&types.EventDeleteStudent{Id: msg.Id}); err != nil {
+		return nil, err
+	}
 
 	// Return the response
 	return &types.MsgDeleteStudentResponse{}, nil

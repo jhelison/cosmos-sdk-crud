@@ -45,8 +45,10 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 	student2 := types.NewStudent("kii2", student2Key.String(), 20)
 
 	// Store then on the KV store
-	s.k.SetStudent(s.ctx, student1)
-	s.k.SetStudent(s.ctx, student2)
+	err := s.k.SetStudent(s.ctx, student1)
+	s.Require().NoError(err)
+	err = s.k.SetStudent(s.ctx, student2)
+	s.Require().NoError(err)
 
 	// Now run the export
 	export, err := s.k.ExportGenesis(s.ctx)
