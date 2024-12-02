@@ -1,0 +1,22 @@
+syntax = "proto3";
+package lb.rps.v1;
+
+option go_package = "challenge/x/rps/types";
+
+import "cosmos_proto/cosmos.proto";
+
+// EventNewStudent is the event that is emitted on new student creation
+message EventNewStudent {
+  // name is the name of the student
+  string name = 1;
+  // id is the id of the student
+  string id = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // age is the age of the student
+  uint64 age = 3;
+}
+
+// EventDeleteStudent is the event tht is emitted on student removal
+message EventDeleteStudent {
+  // id is the id of the student
+  string id = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}

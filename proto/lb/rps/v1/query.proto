@@ -1,0 +1,32 @@
+syntax = "proto3";
+package lb.rps.v1;
+
+option go_package = "challenge/x/rps/types";
+
+import "cosmos/query/v1/query.proto";
+import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+
+import "lb/rps/v1/types.proto";
+
+// Query define the gRPC querier service
+service Query {
+  // Student returns a student from the ID
+  rpc GetStudent(QueryGetStudentRequest) returns (QueryGetStudentResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
+    option (google.api.http).get = "/challenge/rps/student/{id}";
+  }
+}
+
+// QueryGetStudentRequest defines the request for a single student
+message QueryGetStudentRequest {
+  // id is the id passed to the request
+  string id = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// QueryGetStudentRequest defines the GetStudent response with a single student
+message QueryGetStudentResponse {
+  // student is the student response
+  Student student = 1 [ (gogoproto.nullable) = false ];
+}
