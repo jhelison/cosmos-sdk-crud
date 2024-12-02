@@ -25,6 +25,7 @@ type KeeperTestSuite struct {
 
 	// Query and message server
 	queryServer types.QueryServer
+	msgServer   types.MsgServer
 }
 
 // SetupTest sets up the testing environment before each test
@@ -60,6 +61,9 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	// Start the query server
 	suite.queryServer = rpsKeeper.NewQueryServerImpl(*suite.k)
+
+	// Start the message server
+	suite.msgServer = rpsKeeper.NewMsgServerImpl(*suite.k)
 }
 
 // TestKeeperTestSuite runs the full test suite
