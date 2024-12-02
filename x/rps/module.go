@@ -1,6 +1,7 @@
 package rps
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -11,7 +12,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	// gwruntime "github.com/grpc-ecosystem/grpc-gateway/runtime"
+	gwruntime "github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -49,11 +50,11 @@ func (AppModule) Name() string { return types.ModuleName }
 func (AppModule) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the example module.
-// func (AppModule) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *gwruntime.ServeMux) {
-// 	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
-// 		panic(err)
-// 	}
-// }
+func (AppModule) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *gwruntime.ServeMux) {
+	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
+}
 
 // RegisterInterfaces registers interfaces and implementations of the checkers module.
 func (AppModule) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
@@ -66,10 +67,10 @@ func (AppModule) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 func (AppModule) ConsensusVersion() uint64 { return ConsensusVersion }
 
 // RegisterServices registers a gRPC query service to respond to the module-specific gRPC queries.
-// func (am AppModule) RegisterServices(cfg module.Configurator) {
-// 	types.RegisterMsgServer(cfg.MsgServer(), rpsKeeper.NewMsgServerImpl(am.keeper))
-// 	types.RegisterQueryServer(cfg.QueryServer(), rpsKeeper.NewQueryServerImpl(am.keeper))
-// }
+func (am AppModule) RegisterServices(cfg module.Configurator) {
+	types.RegisterMsgServer(cfg.MsgServer(), rpsKeeper.NewMsgServerImpl(am.keeper))
+	types.RegisterQueryServer(cfg.QueryServer(), rpsKeeper.NewQueryServerImpl(am.keeper))
+}
 
 // ********************* IMPLEMENT HasGenesis INTERFACE ******************
 // DefaultGenesis returns default genesis state as raw bytes for the module.
@@ -108,5 +109,3 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 	}
 	return cdc.MustMarshalJSON(gs)
 }
-
-// ***********************************************************************
