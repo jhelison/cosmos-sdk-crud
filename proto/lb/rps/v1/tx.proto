@@ -4,11 +4,13 @@ package lb.rps.v1;
 option go_package = "challenge/x/rps/types";
 
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
 import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
 
 // Msg defines the Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // CreateStudent create a new student on the module
   rpc CreateStudent(MsgCreateStudent) returns (MsgCreateStudentResponse);
   // DeleteStudent remove a student from the module
@@ -17,6 +19,8 @@ service Msg {
 
 // MsgCreateStudent is used when creating a new student
 message MsgCreateStudent {
+  option (cosmos.msg.v1.signer) = "id";
+
   // name is the name of the student
   string name = 1;
   // id is a unique address for each student
@@ -30,6 +34,8 @@ message MsgCreateStudentResponse {}
 
 // MsgCreateStudent is used when deleting a student
 message MsgDeleteStudent {
+  option (cosmos.msg.v1.signer) = "id";
+
   // id for the student who will be deleted
   string id = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
