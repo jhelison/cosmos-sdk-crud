@@ -7,7 +7,10 @@ import "cosmos_proto/cosmos.proto";
 
 // Student defines the name, age and id object
 message Student {
+  // name is the name of the student
   string name = 1;
-  string id = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; 
+  // id is a unique address for each student (the owner address)
+  string id = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // age is the age of the student
   uint64 age = 3;
 }

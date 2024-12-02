@@ -1774,7 +1774,7 @@ func (*MsgCreateStudentResponse) Descriptor() ([]byte, []int) {
 	return file_lb_rps_v1_tx_proto_rawDescGZIP(), []int{1}
 }
 
-// MsgCreateStudent is used when deleting a student
+// MsgDeleteStudent is used when deleting a student
 type MsgDeleteStudent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -32,7 +32,7 @@ message MsgCreateStudent {
 // MsgCreateStudentResponse is the response for the create student
 message MsgCreateStudentResponse {}
 
-// MsgCreateStudent is used when deleting a student
+// MsgDeleteStudent is used when deleting a student
 message MsgDeleteStudent {
   option (cosmos.msg.v1.signer) = "id";
 

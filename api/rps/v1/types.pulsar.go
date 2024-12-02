@@ -564,9 +564,12 @@ type Student struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// name is the name of the student
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Id   string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	Age  uint64 `protobuf:"varint,3,opt,name=age,proto3" json:"age,omitempty"`
+	// id is a unique address for each student (the owner address)
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// age is the age of the student
+	Age uint64 `protobuf:"varint,3,opt,name=age,proto3" json:"age,omitempty"`
 }
 
 func (x *Student) Reset() {

@@ -131,7 +131,7 @@ func (m *MsgCreateStudentResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateStudentResponse proto.InternalMessageInfo
 
-// MsgCreateStudent is used when deleting a student
+// MsgDeleteStudent is used when deleting a student
 type MsgDeleteStudent struct {
 	// id for the student who will be deleted
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
