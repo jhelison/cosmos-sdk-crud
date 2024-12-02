@@ -13,6 +13,7 @@ import (
 	"challenge/app"
 	"challenge/app/params"
 	rpsKeeper "challenge/x/rps/keeper"
+	"challenge/x/rps/types"
 )
 
 // KeeperTestSuite is a suite with the keeper integration tests
@@ -21,6 +22,9 @@ type KeeperTestSuite struct {
 	ctx sdk.Context
 	app *app.RPSApp
 	k   *rpsKeeper.Keeper
+
+	// Query and message server
+	queryServer types.QueryServer
 }
 
 // SetupTest sets up the testing environment before each test
@@ -53,6 +57,9 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	// Set the keeper
 	suite.k = &suite.app.RPSKeeper
+
+	// Start the query server
+	suite.queryServer = rpsKeeper.NewQueryServerImpl(*suite.k)
 }
 
 // TestKeeperTestSuite runs the full test suite
