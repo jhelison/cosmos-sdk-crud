@@ -71,3 +71,16 @@ golangci-install:
 	@command -v $(golangci_lint_cmd) >/dev/null 2>&1 || go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
 
 .PHONY: lint lint-fix golangci-install
+
+##############
+###  Test  ###
+##############
+
+test: test-unit
+
+# The packages that will be tested
+PACKAGES_UNIT=$(shell go list ./...)
+
+# The flags
+test-unit:
+	go test -mod=readonly -timeout=15m $(PACKAGES_UNIT)
