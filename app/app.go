@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	rpsKeeper "challenge/x/rps/keeper"
+	"challenge/app/keepers"
 
 	dbm "github.com/cosmos/cosmos-db"
 
@@ -25,17 +25,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
-	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	_ "challenge/x/rps" // import for side-effects
 
 	_ "cosmossdk.io/api/cosmos/tx/config/v1"          // import for side-effects
+	_ "cosmossdk.io/x/upgrade"                        // import for side-effects
 	_ "cosmossdk.io/x/upgrade"                        // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/auth"           // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/auth/tx/config" // import for side-effects
@@ -44,6 +40,14 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/distribution"   // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/mint"           // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/staking"        // import for side-effects
+
+	"challenge/app/upgrades"
+)
+
+// Node upgrades to be applied
+var (
+	// Start as empty
+	Upgrades = []upgrades.Upgrade{}
 )
 
 // DefaultNodeHome default home directories for the application daemon
@@ -67,13 +71,7 @@ type RPSApp struct {
 	txConfig          client.TxConfig
 	interfaceRegistry codectypes.InterfaceRegistry
 
-	// keepers
-	AccountKeeper         authkeeper.AccountKeeper
-	BankKeeper            bankkeeper.Keeper
-	StakingKeeper         *stakingkeeper.Keeper
-	DistrKeeper           distrkeeper.Keeper
-	ConsensusParamsKeeper consensuskeeper.Keeper
-	RPSKeeper             rpsKeeper.Keeper // Import rps keeper
+	keepers.AppKeepers
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -134,6 +132,7 @@ func NewRPSApp(
 		&app.DistrKeeper,
 		&app.ConsensusParamsKeeper,
 		&app.RPSKeeper,
+		&app.UpgradeKeeper,
 	); err != nil {
 		return nil, err
 	}
@@ -144,6 +143,9 @@ func NewRPSApp(
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {
 		return nil, err
 	}
+
+	app.RegisterUpgradeHandlers()
+	app.SetStoreUpgradeHandlers()
 
 	/****  Module Options ****/
 
@@ -197,5 +199,28 @@ func (app *RPSApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICon
 	// register swagger API in app.go so that other applications can override easily
 	if err := server.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {
 		panic(err)
+	}
+}
+
+// Add (or remove) keepers when they are introduced / removed in different versions
+func (app *RPSApp) SetStoreUpgradeHandlers() {
+	_, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(err)
+	}
+}
+
+// RegisterUpgradeHandlers registers all the upgrade handlers
+func (app *RPSApp) RegisterUpgradeHandlers() {
+	// Iterate all the upgrades applying as needed
+	for _, upgrade := range Upgrades {
+		app.UpgradeKeeper.SetUpgradeHandler(
+			upgrade.UpgradeName,
+			upgrade.CreateUpgradeHandler(
+				app.ModuleManager,
+				app.Configurator(),
+				&app.AppKeepers,
+			),
+		)
 	}
 }
